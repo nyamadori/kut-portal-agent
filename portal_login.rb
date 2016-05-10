@@ -1,5 +1,6 @@
 require 'mechanize'
 require 'openssl'
+require 'dotenv'
 
 class KUTPortal
   attr_reader :agent
@@ -10,10 +11,14 @@ class KUTPortal
     @agent = Mechanize.new { |a| a.user_agent_alias = 'Windows Mozilla' }
     # ポータルの証明書が原因でアクセスに失敗するため、証明書を確認しないようにする
     @agent.verify_mode = OpenSSL::SSL::VERIFY_NONE
+    @agent.cookie_jar.load('cookie.yml', session: true)
+  end
+
+  def start
+    @agent.get AUTH_URL
   end
 
   def login(username, password)
-    @agent.get AUTH_URL
     form = @agent.page.forms[0]
     form['j_username'] = username
     form['j_password'] = password
@@ -22,6 +27,12 @@ class KUTPortal
     # Mechanize は JavaScript をサポートしないため、ポータルサイトが警告を発するが
     # [Continue] ボタンをクリックして無視する
     @agent.page.forms[0].click_button
+    @agent.cookie_jar.save('cookie.yml', session: true)
+  end
+
+  def logging_in?
+    @agent.get AUTH_URL
+    !!@agent.page.at('img[alt=ログアウト]')
   end
 
   def ta
@@ -29,8 +40,11 @@ class KUTPortal
   end
 end
 
+Dotenv.load
+
 portal = KUTPortal.new
-puts KUTPortal::AUTH_URL
-portal.login('id', 'pass')
+portal.start
+portal.login(ENV['USERNAME'], ENV['PASSWORD']) unless portal.logging_in?
 portal.ta
+
 puts portal.agent.page.body
