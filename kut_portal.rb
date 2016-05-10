@@ -4,7 +4,7 @@ require 'dotenv'
 
 class KUTPortal
   attr_reader :agent
-  AUTH_URL = 'https://portal.kochi-tech.ac.jp/'
+  INDEX_URL = 'https://portal.kochi-tech.ac.jp/'
   TA_SUBJECTS_PATH = '/Portal/StudentApp/TA/WorkSumList.aspx'
 
   def initialize
@@ -15,7 +15,7 @@ class KUTPortal
   end
 
   def start
-    @agent.get AUTH_URL
+    @agent.get INDEX_URL
   end
 
   def login(username, password)
@@ -31,12 +31,26 @@ class KUTPortal
   end
 
   def logging_in?
-    @agent.get AUTH_URL
+    @agent.get INDEX_URL
     !!@agent.page.at('img[alt=ログアウト]')
   end
 
-  def ta
+  def ta_subjects
     @agent.get(TA_SUBJECTS_PATH)
+    table = @agent.page.at('#ctl00_phContents_TaWorkSumList1_gvWorkSum')
+    rows = table.search('tr')
+
+    subjects = rows.map do |row|
+      values = row.search('td').map do |col|
+        col.text.delete("\n\t\r  ")
+      end
+
+      keys = %w(num term subject_id subject_name teacher pay_unit hours total_hours plan_hours, overtime_hours)
+      Hash[keys.zip(values)]
+    end
+
+    subjects.shift
+    subjects
   end
 end
 
@@ -45,6 +59,4 @@ Dotenv.load
 portal = KUTPortal.new
 portal.start
 portal.login(ENV['USERNAME'], ENV['PASSWORD']) unless portal.logging_in?
-portal.ta
-
-puts portal.agent.page.body
+p portal.ta_subjects
