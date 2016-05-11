@@ -17,4 +17,6 @@ end
 
 pp portal.ta_subjects
 pp portal.ta_works('コンピュータリテラシ')
-portal.add_ta_work_record('コンピュータリテラシ', :support, '2016/05/12', '8:50', '10:20', '0:00')
+unless portal.add_ta_work_record('コンピュータリテラシ', :support, '2016/05/13', '8:50', '10:20', '0:00')
+  puts '勤務記録追加失敗!'
+end

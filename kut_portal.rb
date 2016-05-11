@@ -97,6 +97,14 @@ class KUTPortal
     form['ctl00$phContents$TaWorkEdit1$ctlWorkDetail$ddlWorkDetail'] = TA_WORK_SUMMARIES[summary]
 
     form.click_button(form.button_with(value: /登録/))
-    puts @agent.page.body
+
+    error_text_ids =
+      %w(ctl00_phContents_TaWorkEdit1_ctlWorkDate_lblError
+      ctl00_phContents_TaWorkEdit1_ctlWorkDetail_lblError
+      ctl00_phContents_TaWorkEdit1_ctlStartTime_lblError
+      ctl00_phContents_TaWorkEdit1_ctlEndTime_lblError
+      ctl00_phContents_TaWorkEdit1_lblErr)
+
+    !error_text_ids.any? { |id| !!@agent.page.at("##{id}") }
   end
 end
