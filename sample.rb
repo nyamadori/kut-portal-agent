@@ -17,4 +17,4 @@ end
 
 pp portal.ta_subjects
 pp portal.ta_works('コンピュータリテラシ')
-# portal.record_ta_work('コンピュータリテラシ', '2016/05/12', '8:50', '10:20')
+portal.add_ta_work_record('コンピュータリテラシ', :support, '2016/05/12', '8:50', '10:20', '0:00')
