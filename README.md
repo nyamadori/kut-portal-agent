@@ -13,13 +13,20 @@ portal = KUTPortal.new
 portal.start
 portal.login('username', 'password')
 p portal.ta_subjects # TA担当科目一覧
+p portal.ta_works('コンピュータリテラシ') # TA科目勤務記録取得
 ```
 
 機能一覧
 -------
 
+### 共通
+
 * [x] ログイン
+
+### TA (Teaching Assistant)
+
 * [x] TA担当科目一覧取得
+* [x] TA科目勤務記録取得
 
 実装予定
 ------
@@ -33,7 +40,7 @@ p portal.ta_subjects # TA担当科目一覧
 * [ ] 科目検索
 * [ ] 科目情報取得
 
-### TA (Teaching Assistant)
+### TA
 
 * [ ] TA出勤記録追加
 * [ ] TA出勤記録編集
