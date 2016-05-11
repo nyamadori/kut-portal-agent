@@ -3,6 +3,18 @@ kut-portal
 
 高知工科大学学生用ポータルシステムのRuby製スクレイピングライブラリ。
 
+使い方
+-----
+
+```ruby
+require './kut_portal'
+
+portal = KUTPortal.new
+portal.start
+portal.login('username', 'password')
+p portal.ta_subjects # TA担当科目一覧
+```
+
 機能一覧
 -------
 
