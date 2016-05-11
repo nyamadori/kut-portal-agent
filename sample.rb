@@ -16,3 +16,5 @@ if portal.need_login?
 end
 
 pp portal.ta_subjects
+pp portal.ta_works('コンピュータリテラシ')
+# portal.record_ta_work('コンピュータリテラシ', '2016/05/12', '8:50', '10:20')
