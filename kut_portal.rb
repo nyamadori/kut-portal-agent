@@ -1,5 +1,6 @@
 require 'mechanize'
 require 'openssl'
+require './util'
 
 class KUTPortal
   attr_reader :agent, :ta_subjects
@@ -51,20 +52,9 @@ class KUTPortal
 
   def ta_subjects
     @agent.get(TA_SUBJECTS_PATH)
-    table = @agent.page.at(TA_SUBJECTS_TABLE)
-    rows = table.search('tr')
-
-    subjects = rows.map do |row|
-      values = row.search('td').map do |col|
-        col.text.delete("\n\t\r  ")
-      end
-
-      keys = %i(num term subject_id subject_name teacher pay_unit hours total_hours plan_hours overtime_hours)
-      Hash[keys.zip(values)]
-    end
-
-    subjects.shift
-    subjects
+    tbl_rows = @agent.page.search("#{TA_SUBJECTS_TABLE} tr")
+    keys = %i(num term subject_id subject_name teacher pay_unit hours total_hours plan_hours overtime_hours)
+    Util.table_rows_to_records(tbl_rows, *keys)
   end
 
   def ta_works(subject_name)
@@ -73,16 +63,10 @@ class KUTPortal
     tr = @agent.page.at(tr_query)
     form = @agent.page.forms[0]
     new_record_btn = form.button_with(value: /登録/)
-    form.click_button(new_record_btn)
+    form.click_button(new_record_btn) # 科目勤務記録に遷移
+
     tbl_rows = @agent.page.search("#{TA_WORKS_TABLE} tr")
-
-    works = tbl_rows.map do |row|
-      values = row.search('td').map { |col| col.text.delete("\n\t\r  ") }
-      keys = %i(date summary started finished rest_hours total_hours)
-      Hash[keys.zip(values)]
-    end
-
-    works.shift
-    works
+    keys = %i(date summary started finished rest_hours total_hours)
+    Util.table_rows_to_records(tbl_rows, *keys)
   end
 end
