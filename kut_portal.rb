@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'mechanize'
 require 'openssl'
 require './util'
@@ -19,7 +20,12 @@ class KUTPortal
   }
 
   def initialize
-    @agent = Mechanize.new { |a| a.user_agent_alias = 'Windows Mozilla' }
+    @agent = Mechanize.new do |a|
+      a.user_agent_alias = 'Windows Mozilla'
+#      a.follow_meta_refresh = true
+ #     a.keep_alive = false
+    end
+
     # ポータルの証明書が原因でアクセスに失敗するため、証明書を確認しないようにする
     @agent.verify_mode = OpenSSL::SSL::VERIFY_NONE
   end

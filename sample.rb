@@ -1,5 +1,7 @@
+# coding: utf-8
 require 'dotenv'
 require 'pp'
+require 'io/console'
 require './kut_portal'
 
 Dotenv.load
@@ -9,14 +11,31 @@ portal.start
 portal.restore_session
 
 if portal.need_login?
-  unless portal.login(ENV['USERNAME'], ENV['PASSWORD'])
+  print 'ユーザID: '
+  username = gets.chop
+  print 'パスワード: '
+  password = STDIN.noecho(&:gets).chop
+  puts
+
+  unless portal.login(username, password)
     puts 'ログイン失敗!'
     exit 1
   end
 end
 
-pp portal.ta_subjects
-pp portal.ta_works('コンピュータリテラシ')
-unless portal.add_ta_work_record('コンピュータリテラシ', :support, '2016/05/13', '8:50', '10:20', '0:00')
+print '科目: '
+subject = gets.chop
+print '名目: '
+summary = KUTPortal::TA_WORK_SUMMARIES[:"#{gets.chop}"]
+print '日付: '
+date = gets.chop
+print '開始: '
+started = gets.chop
+print '終了: '
+finished = gets.chop
+print '休憩時間: '
+rest_hours = gets.chop
+
+unless portal.add_ta_work_record(subject, summary, date, started, finished, rest_hours)
   puts '勤務記録追加失敗!'
 end
