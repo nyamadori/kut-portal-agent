@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+
+require 'dotenv'
+require 'pp'
+require 'io/console'
+require './kut_portal'
+
+Dotenv.load
+
+portal = KUTPortal.new
+portal.start
+portal.restore_session
+
+if portal.need_login?
+  print 'ユーザID: '
+  username = gets.chop
+  print 'パスワード: '
+  password = STDIN.noecho(&:gets).chop
+  puts
+
+  unless portal.login(username, password)
+    puts 'ログイン失敗!'
+    exit 1
+  end
+end
+
+subject, summary, date, started, finished, rest_hours = *ARGV
+summary = :"#{summary}"
+
+unless portal.add_ta_work_record(subject, summary, date, started, finished, rest_hours)
+  puts '勤務記録追加失敗!'
+end
