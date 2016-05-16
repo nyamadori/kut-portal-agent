@@ -6,8 +6,6 @@ require 'pp'
 require 'io/console'
 require './kut_portal'
 
-Dotenv.load
-
 portal = KUTPortal.new
 portal.start
 portal.restore_session
