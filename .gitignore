@@ -22,3 +22,5 @@ build/
 .rvmrc
 .env
 cookie.yml
+*#*#
+*~
