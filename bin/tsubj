@@ -1,13 +1,19 @@
 #!/usr/bin/env ruby
 # coding: utf-8
 
-require 'dotenv'
 require 'pp'
 require 'io/console'
+require 'optparse'
 require './kut_portal'
 
-if ARGV.size < 6
-  puts 'usage: ./tadd subject summary date started finished rest_hours'
+OPTS = {}
+opt = OptionParser.new
+opt.on('-y YEAR', '--year Y') { |y| OPTS[:year] = y }
+opt.on('-m YEAR', '--month M') { |m| OPTS[:month] = m }
+opt.parse!(ARGV)
+
+if ARGV.size > 0
+  puts 'usage: ./tsubj [-m month]'
   exit 1
 end
 
@@ -28,9 +34,4 @@ if portal.need_login?
   end
 end
 
-subject, summary, date, started, finished, rest_hours = *ARGV
-summary = :"#{summary}"
-
-unless portal.add_ta_work_record(subject, summary, date, started, finished, rest_hours)
-  puts '勤務記録追加失敗!'
-end
+pp portal.ta_subjects(OPTS[:year], OPTS[:month])
