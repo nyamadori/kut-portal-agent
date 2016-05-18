@@ -10,6 +10,7 @@ class KUTPortal
   TA_SUBJECTS_TABLE = '#ctl00_phContents_TaWorkSumList1_gvWorkSum'
   TA_WORKS_TABLE = '#ctl00_phContents_TaWorkList1_gvWork'
   TA_WORK_RECORD_ADD_BTN = '#ctl00$phContents$TaWorkList1$btnNew'
+  TA_WORK_RECORD_REMOVE_BTN = '#ctl00_phContents_TaWorkList1_gvWork_ctl02_btnDelete'
   TA_WORK_SUMMARIES = {
     support: '①授業補助',
     prepare: '②授業準備',
@@ -112,5 +113,15 @@ class KUTPortal
       ctl00_phContents_TaWorkEdit1_lblErr)
 
     !error_text_ids.any? { |id| !!@agent.page.at("##{id}") }
+  end
+
+  def remove_ta_work_record(subject_name, date)
+    works = ta_works(subject_name)
+    works_form = @agent.page.forms[0]
+    rm_work = works.find { |w| w[:date].include?(date) }
+    tr_query = "#{TA_WORKS_TABLE} tr:nth-of-type(#{rm_work[:num].to_i + 1})"
+    tr = @agent.page.at(tr_query)
+    remove_btn = works_form.button_with(id: /#{tr.at('input[value=削除]').attribute('id')}/)
+    works_form.click_button(remove_btn) # 削除ボタンをクリック
   end
 end
