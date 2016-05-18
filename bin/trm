@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+
+require 'pp'
+require 'io/console'
+require './kut_portal'
+
+if ARGV.size < 2
+  puts 'usage: ./trm subject date'
+  exit 1
+end
+
+portal = KUTPortal.new
+portal.start
+portal.restore_session
+
+if portal.need_login?
+  print 'ユーザID: '
+  username = STDIN.gets.chop
+  print 'パスワード: '
+  password = STDIN.noecho(&:gets).chop
+  puts
+
+  unless portal.login(username, password)
+    puts 'ログイン失敗!'
+    exit 1
+  end
+end
+
+subject, date = *ARGV
+portal.remove_ta_work_record(subject, date)
