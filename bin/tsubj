@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+# coding: utf-8
+
+require 'pp'
+require 'io/console'
+require 'optparse'
+require './kut_portal'
+
+OPTS = {}
+opt = OptionParser.new
+opt.on('-y YEAR', '--year Y') { |y| OPTS[:year] = y }
+opt.on('-m YEAR', '--month M') { |m| OPTS[:month] = m }
+opt.parse!(ARGV)
+#
+# if ARGV.size < 1
+#   puts 'usage: ./tsubj [-m month]'
+#   exit 1
+# end
+
+portal = KUTPortal.new
+portal.start
+portal.restore_session
+
+if portal.need_login?
+  print 'ユーザID: '
+  username = gets.chop
+  print 'パスワード: '
+  password = STDIN.noecho(&:gets).chop
+  puts
+
+  unless portal.login(username, password)
+    puts 'ログイン失敗!'
+    exit 1
+  end
+end
+
+pp portal.ta_subjects(OPTS[:year], OPTS[:month])
