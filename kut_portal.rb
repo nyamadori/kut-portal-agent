@@ -80,7 +80,7 @@ class KUTPortal
     form.click_button(form.button_with(value: /登録/)) # 科目勤務記録一覧に遷移
 
     tbl_rows = @agent.page.search("#{TA_WORKS_TABLE} tr")
-    keys = %i(date summary started finished rest_hours total_hours)
+    keys = %i(num date summary started finished rest_hours total_hours)
     Util.table_rows_to_records(tbl_rows, *keys)
   end
 
