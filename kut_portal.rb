@@ -66,15 +66,31 @@ class KUTPortal
     !logging_in?
   end
 
-  def ta_subjects
+  def ta_subjects(year = nil, month = nil)
     @agent.get(TA_SUBJECTS_PATH)
+    form = @agent.page.forms[0]
+
+    if year
+      form['ctl00$phContents$TaWorkSumList1$ddlYear'] = year
+      form['__EVENTTARGET'] = 'ctl00$phContents$TaWorkSumList1$ddlYear'
+      form['__EVENTARGUMENT'] = ''
+      form.submit()
+    end
+
+    if month
+      form['ctl00$phContents$TaWorkSumList1$ctlMonths$ddlMonth'] = month
+      form['__EVENTTARGET'] = 'ctl00$phContents$TaWorkSumList1$ctlMonths$ddlMonth'
+      form['__EVENTARGUMENT'] = ''
+      form.submit()
+    end
+
     tbl_rows = @agent.page.search("#{TA_SUBJECTS_TABLE} tr")
     keys = %i(num term subject_id subject_name teacher pay_unit hours total_hours plan_hours overtime_hours)
     Util.table_rows_to_records(tbl_rows, *keys)
   end
 
-  def ta_works(subject_name)
-    subject = ta_subjects.find { |s| s[:subject_name].include?(subject_name) }
+  def ta_works(subject_name, year = nil, month = nil)
+    subject = ta_subjects(year, month).find { |s| s[:subject_name].include?(subject_name) }
     tr_query = "#{TA_SUBJECTS_TABLE} tr:nth-of-type(#{subject[:num].to_i + 1})"
     tr = @agent.page.at(tr_query)
     form = @agent.page.forms[0]
