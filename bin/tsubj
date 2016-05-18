@@ -11,11 +11,11 @@ opt = OptionParser.new
 opt.on('-y YEAR', '--year Y') { |y| OPTS[:year] = y }
 opt.on('-m YEAR', '--month M') { |m| OPTS[:month] = m }
 opt.parse!(ARGV)
-#
-# if ARGV.size < 1
-#   puts 'usage: ./tsubj [-m month]'
-#   exit 1
-# end
+
+if ARGV.size > 0
+  puts 'usage: ./tsubj [-m month]'
+  exit 1
+end
 
 portal = KUTPortal.new
 portal.start

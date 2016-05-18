@@ -7,7 +7,7 @@ require 'io/console'
 require './kut_portal'
 
 if ARGV.size < 6
-  puts 'usage: ./tadd subject summary date started finished rest_hours' 
+  puts 'usage: ./tadd subject summary date started finished rest_hours'
   exit 1
 end
 
