@@ -17,7 +17,7 @@ portal.restore_session
 
 if portal.need_login?
   print 'ユーザID: '
-  username = gets.chop
+  username = STDIN.gets.chop
   print 'パスワード: '
   password = STDIN.noecho(&:gets).chop
   puts
