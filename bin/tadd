@@ -4,6 +4,7 @@
 require 'dotenv'
 require 'pp'
 require 'io/console'
+require 'date'
 require './kut_portal'
 
 if ARGV.size < 6
@@ -17,7 +18,7 @@ portal.restore_session
 
 if portal.need_login?
   print 'ユーザID: '
-  username = gets.chop
+  username = STDIN.gets.chop
   print 'パスワード: '
   password = STDIN.noecho(&:gets).chop
   puts
@@ -31,6 +32,12 @@ end
 subject, summary, date, started, finished, rest_hours = *ARGV
 summary = :"#{summary}"
 
-unless portal.add_ta_work_record(subject, summary, date, started, finished, rest_hours)
-  puts '勤務記録追加失敗!'
-end
+res = portal.add_ta_work_record(
+  subject,
+  summary,
+  Date.parse(date),
+  DateTime.parse(started),
+  DateTime.parse(finished),
+  DateTime.parse(rest_hours))
+
+puts '勤務記録追加失敗!' unless res
