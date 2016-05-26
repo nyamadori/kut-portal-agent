@@ -83,23 +83,31 @@ class KUTPortal
     keys = %i(date summary started finished rest_hours total_hours)
     Util.table_rows_to_records(tbl_rows, *keys)
   end
-
+  
   def add_ta_work_record(subject_name, summary, date, started, finished, rest_hours)
     ta_works(subject_name)
     works_form = @agent.page.forms[0]
     add_btn = works_form.button_with(value: /新規追加/)
     works_form.click_button(add_btn) # 科目勤務記録登録に遷移
 
-    summaries = %w(①授業補助 ②授業準備 ③資料作成 ④その他 ①②授業補助と授業準備 ①③授業補助と資料作成)
-
     form = @agent.page.forms[0]
-    form['ctl00$phContents$TaWorkEdit1$ctlWorkDate$txtDate'] = date
-    form['ctl00$phContents$TaWorkEdit1$ctlStartTime$txtHour'],
-      form['ctl00$phContents$TaWorkEdit1$ctlStartTime$txtMinute'] = started.split(':')
-    form['ctl00$phContents$TaWorkEdit1$ctlEndTime$txtHour'],
-      form['ctl00$phContents$TaWorkEdit1$ctlEndTime$txtMinute'] = finished.split(':')
-    form['ctl00$phContents$TaWorkEdit1$ctlRestTime$txtHour'],
-      form['ctl00$phContents$TaWorkEdit1$ctlRestTime$txtMinute'] = rest_hours.split(':')
+
+    # 日付
+    form['ctl00$phContents$TaWorkEdit1$ctlWorkDate$txtDate'] = date.strftime('%Y/%m/%d')
+
+    # 開始時間
+    form['ctl00$phContents$TaWorkEdit1$ctlStartTime$txtHour'] = started.strftime('%H')
+    form['ctl00$phContents$TaWorkEdit1$ctlStartTime$txtMinute'] = started.strftime('%M')
+
+    # 終了時間
+    form['ctl00$phContents$TaWorkEdit1$ctlEndTime$txtHour'] = finished.strftime('%H')
+    form['ctl00$phContents$TaWorkEdit1$ctlEndTime$txtMinute'] = finished.strftime('%M')
+
+    # 休憩時間
+    form['ctl00$phContents$TaWorkEdit1$ctlRestTime$txtHour'] = rest_hours.strftime('%H')
+    form['ctl00$phContents$TaWorkEdit1$ctlRestTime$txtMinute'] = rest_hours.strftime('%M')
+
+    # 名目
     form['ctl00$phContents$TaWorkEdit1$ctlWorkDetail$ddlWorkDetail'] = TA_WORK_SUMMARIES[summary]
 
     form.click_button(form.button_with(value: /登録/))
